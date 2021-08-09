@@ -84,6 +84,32 @@ class TestHBNBCommand(TestCase):
         for key in storage.all().keys():
             self.assertIn(key, json_dict)
 
+    def test_create_kwarg(self):
+        """Test for correct create command action."""
+        # Correct creation of object
+        cmd = ("create Place city_id=\"0001\" user_id=\"0001\" "
+               "name=\"My_little_house\" number_rooms=4 number_bathrooms=2 "
+               "max_guest=10 price_by_night=300 latitude=37.773972 "
+               "longitude=-122.431297")
+        with mock.patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd(cmd)
+        self.assertIn("Place." + f.getvalue()[:-1], storage.all())
+        with open(storage._FileStorage__file_path, "r", encoding="utf-8") as f:
+            json_dict = json.load(f)
+        for key, val in storage.all().items():
+            self.assertIn(key, json_dict)
+            for key_json, val_json in json_dict[key].items():
+                if key_json not in ['updated_at', 'created_at']:
+                    if key_json != '__class__':
+                        self.assertTrue(val.__dict__[key_json], val_json)
+                        self.assertTrue(type(val.__dict__[key_json]),
+                                        type(val_json))
+                    else:
+                        self.assertTrue(key.split('.')[0], val_json)
+                else:
+                    self.assertTrue(val.__dict__[key_json].isoformat(),
+                                    val_json)
+
     @skip("Activate when finished")
     def test_show(self):
         """Test for correct show command action."""

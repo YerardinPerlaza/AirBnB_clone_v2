@@ -126,8 +126,6 @@ class HBNBCommand(cmd.Cmd):
         elif class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        new_instance = HBNBCommand.classes[class_name]()
-        storage.save()
 
         kwargs = {}
         if args:
@@ -137,9 +135,10 @@ class HBNBCommand(cmd.Cmd):
                 if "_" in val:
                     val = val.replace('_', ' ')
                 kwargs[key] = val
-            self.do_update(class_name + ' ' +
-                           new_instance.id + ' ' +
-                           str(kwargs))
+            new_instance = HBNBCommand.classes[class_name](**kwargs)
+        else:
+            new_instance = HBNBCommand.classes[class_name]()
+        new_instance.save()
 
         print(new_instance.id)
 
