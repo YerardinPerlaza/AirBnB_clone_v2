@@ -13,12 +13,13 @@ from models.review import Review
 
 
 class DBStorage:
-    """Documentation"""
+    """This class manages storage of hbnb models using SQL Alchemy
+    connecting to a MySQL database"""
     __engine = None
     __session = None
 
     def __init__(self):
-        """Documentation"""
+        """The DBStorage constructor"""
         user = getenv('HBNB_MYSQL_USER')
         pwd = getenv('HBNB_MYSQL_PWD')
         host = getenv('HBNB_MYSQL_HOST')
@@ -32,7 +33,8 @@ class DBStorage:
             Base.metadata.drop_all()
 
     def all(self, cls=None):
-        """Documentation"""
+        """Returns all instances of a given class if passed as argument
+        or all classes otherwise"""
         classes = {
             'User': User, 'Place': Place,
             'State': State,
@@ -52,21 +54,22 @@ class DBStorage:
         return q_dict
 
     def new(self, obj):
-        """Documentation"""
+        """Adds a new instance of the class to the SQLAlchemy session"""
         if obj:
             self.__session.add(obj)
 
     def save(self):
-        """Documentation"""
+        """Saves all changes to the database using the SQLAlchemy session"""
         self.__session.commit()
 
     def delete(self, obj=None):
-        """Documentation"""
+        """Deletes an object from the database"""
         if obj:
             self.__session.delete(obj)
 
     def reload(self):
-        """Documentation"""
+        """Creates all schema in the database and initializes a session
+        using SQLAlchemy"""
         Base.metadata.create_all(self.__engine)
 
         Session = scoped_session(sessionmaker(bind=self.__engine,
