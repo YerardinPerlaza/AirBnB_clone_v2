@@ -34,9 +34,9 @@ class DBStorage:
     def all(self, cls=None):
         """Documentation"""
         classes = {
-            # 'User': User, 'Place': Place,
+            'User': User, 'Place': Place,
             'State': State,
-            'City': City # 'Amenity': Amenity, 'Review': Review
+            'City': City  # 'Amenity': Amenity, 'Review': Review
         }
         q_dict = {}
 
