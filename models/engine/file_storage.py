@@ -58,7 +58,7 @@ class FileStorage:
             pass
 
     def delete(self, obj=None):
-        """delete obj from __objects if it’s inside"""
+        """Delete obj from __objects if it’s inside"""
         FileStorage.__objects = {key: val for key, val
                                  in FileStorage.__objects.items()
                                  if val != obj}
