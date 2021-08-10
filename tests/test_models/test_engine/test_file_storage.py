@@ -21,7 +21,7 @@ class test_fileStorage(unittest.TestCase):
         """ Remove storage file at end of tests """
         try:
             os.remove('file.json')
-        except:
+        except Exception:
             pass
 
     def test_obj_list_empty(self):
@@ -31,20 +31,15 @@ class test_fileStorage(unittest.TestCase):
     def test_new(self):
         """ New object is correctly added to __objects """
         new = BaseModel()
-        for obj in storage.all().values():
-            temp = obj
-        self.assertTrue(temp is obj)
+        new.save()
+        self.assertTrue(storage.all() != {})
 
     def test_all(self):
         """ __objects is properly returned """
         new = BaseModel()
+        new.save()
         temp = storage.all()
         self.assertIsInstance(temp, dict)
-
-    def test_base_model_instantiation(self):
-        """ File is not created on BaseModel save """
-        new = BaseModel()
-        self.assertFalse(os.path.exists('file.json'))
 
     def test_empty(self):
         """ Data is saved to file """
@@ -52,18 +47,19 @@ class test_fileStorage(unittest.TestCase):
         thing = new.to_dict()
         new.save()
         new2 = BaseModel(**thing)
+        new2.save()
         self.assertNotEqual(os.path.getsize('file.json'), 0)
 
     def test_save(self):
         """ FileStorage save method """
         new = BaseModel()
-        storage.save()
+        new.save()
         self.assertTrue(os.path.exists('file.json'))
 
     def test_reload(self):
         """ Storage file is successfully loaded to __objects """
         new = BaseModel()
-        storage.save()
+        new.save()
         storage.reload()
         for obj in storage.all().values():
             loaded = obj
@@ -97,6 +93,7 @@ class test_fileStorage(unittest.TestCase):
     def test_key_format(self):
         """ Key is properly formatted """
         new = BaseModel()
+        new.save()
         _id = new.to_dict()['id']
         for key in storage.all().keys():
             temp = key
@@ -105,5 +102,11 @@ class test_fileStorage(unittest.TestCase):
     def test_storage_var_created(self):
         """ FileStorage object storage created """
         from models.engine.file_storage import FileStorage
-        print(type(storage))
         self.assertEqual(type(storage), FileStorage)
+
+    def test_delete(self):
+        """ Delete method from file_storage functioning properly """
+        new = BaseModel()
+        new.save()
+        storage.delete(new)
+        self.assertEqual(storage.all(), {})
