@@ -2,8 +2,11 @@
 """ Module for testing file storage"""
 import unittest
 from models.base_model import BaseModel
+from models.engine.file_storage import FileStorage
 from models import storage
 import os
+import inspect
+import pep8
 
 
 class test_fileStorage(unittest.TestCase):
@@ -110,3 +113,38 @@ class test_fileStorage(unittest.TestCase):
         new.save()
         storage.delete(new)
         self.assertEqual(storage.all(), {})
+
+
+class TestFileStorageDoc(unittest.TestCase):
+    "Tests documentation and pep8 for FileStorage class."
+
+    @classmethod
+    def setUpClass(cls):
+        """Sets the whole functions of the class FileStorage to be inspected for
+        correct documentation."""
+        cls.functions = inspect.getmembers(FileStorage,
+                                           inspect.isfunction(FileStorage))
+
+    def test_doc_module(self):
+        """Tests for docstring presence in the module and the class."""
+        from models.engine import file_storage
+
+        self.assertTrue(len(file_storage.__doc__) > 0)
+        self.assertTrue(len(file_storage.FileStorage.__doc__) > 0)
+
+    def test_doc_fun(self):
+        """Tests for docstring presence in all functions of class."""
+        for fun in self.functions:
+            self.assertTrue(len(fun.__doc__) > 0)
+
+    def test_pep8(self):
+        """Tests pep8 style compliance of module and test files."""
+        p8 = pep8.StyleGuide(quiet=False)
+
+        res = p8.check_files(['models/engine/file_storage.py'])
+        self.assertEqual(res.total_errors, 0,
+                         "Found code style errors (and warnings).")
+        res = p8.check_files(
+            ['tests/test_models/test_engine/test_file_storage.py'])
+        self.assertEqual(res.total_errors, 0,
+                         "Found code style errors (and warnings).")
