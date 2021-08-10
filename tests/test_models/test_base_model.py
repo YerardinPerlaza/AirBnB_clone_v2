@@ -24,7 +24,7 @@ class test_basemodel(unittest.TestCase):
     def tearDown(self):
         try:
             os.remove('file.json')
-        except:
+        except Exception:
             pass
 
     def test_default(self):
@@ -47,8 +47,8 @@ class test_basemodel(unittest.TestCase):
         with self.assertRaises(TypeError):
             new = BaseModel(**copy)
 
-    def test_save(self):
-        """ Testing save """
+    def test_save_file_storage(self):
+        """ Testing save on file_storage """
         i = self.value()
         i.save()
         key = self.name + "." + i.id
@@ -66,6 +66,8 @@ class test_basemodel(unittest.TestCase):
         """ """
         i = self.value()
         n = i.to_dict()
+
+        self.assertNotIn('_sa_instance_state', n)
         self.assertEqual(i.to_dict(), n)
 
     def test_kwargs_none(self):
@@ -77,8 +79,9 @@ class test_basemodel(unittest.TestCase):
     def test_kwargs_one(self):
         """ """
         n = {'Name': 'test'}
-        with self.assertRaises(KeyError):
-            new = self.value(**n)
+        new = self.value(**n)
+        self.assertIn(list(n.keys())[0], new.__dict__)
+        self.assertEqual(n['Name'], new.__dict__['Name'])
 
     def test_id(self):
         """ """
@@ -97,3 +100,11 @@ class test_basemodel(unittest.TestCase):
         n = new.to_dict()
         new = BaseModel(**n)
         self.assertFalse(new.created_at == new.updated_at)
+
+    def test_delete(self):
+        """ Delete method from base_model functioning properly """
+        from models.__init__ import storage
+        new = BaseModel()
+        new.save()
+        new.delete()
+        self.assertEqual(storage.all(), {})
