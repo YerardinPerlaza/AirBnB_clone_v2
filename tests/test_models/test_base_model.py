@@ -19,6 +19,7 @@ class test_basemodel(unittest.TestCase, BaseModel):
         super().__init__(*args, **kwargs)
         self.name = 'BaseModel'
         self.value = BaseModel
+        self.obj = self.value()
 
     def setUp(self):
         """ """
@@ -108,13 +109,11 @@ class test_basemodel(unittest.TestCase, BaseModel):
     def test_delete(self):
         """ Delete method from base_model functioning properly """
         from models.__init__ import storage
-        key = self.name + '.' + self.obj.id
-        # self.assertIn(key, storage.all()[key])
-        print(storage.all())
-        print(self.obj.__dict__)
-        print(key)
-        # i.delete()
-        # self.assertNotIn(key, storage.all()[key])
+        new = self.value()
+        key = self.name + '.' + new.id
+        new.save()
+        new.delete()
+        self.assertNotIn(key, storage.all())
 
 
 class TestBaseModelDoc(unittest.TestCase):
