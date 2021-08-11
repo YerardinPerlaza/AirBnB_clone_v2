@@ -41,6 +41,7 @@ class Place(BaseModel, Base):
 
         @property
         def reviews(self):
+            """ Returns the list of reviews for the current place """
             review_dict = models.storage.all(Review)
             review_list = []
             for key, val in review_dict.items():
@@ -50,9 +51,11 @@ class Place(BaseModel, Base):
 
         @property
         def amenities(self):
+            """ Returns the list of amenity ids stored """
             return self.amenity_ids
 
         @amenities.setter
         def amenities(self, obj):
+            """ Pushes a new amenity id to the list """
             if isinstance(obj, Amenity):
                 self.amenity_ids.push(obj.id)
