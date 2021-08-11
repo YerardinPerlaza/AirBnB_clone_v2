@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """ Module for testing db storage"""
 import unittest
+from models.base_model import Base
 from models.state import State
 from models.engine.db_storage import DBStorage
 from models import storage
@@ -29,16 +30,18 @@ class test_DBStorage(unittest.TestCase):
             self.db = MySQLdb.connect(host=self.host, port=3306,
                                       db=self.dbname, charset="utf8",
                                       user=self.user, passwd=self.pwd)
+        self.cur = self.db.cursor()
 
     def tearDown(self):
+        self.cur.execute("""DELETE FROM states;""")
+        self.cur.close()
         self.db.close()
 
-    def test_new(self):
+    def test_new_save(self):
         """ New object is correctly added to database """
-        cur = self.db.cursor()
-        cur.execute("SELECT COUNT(*) FROM states;")
-        init_count = cur.fetchall()[0][0]
-        cur.close()
+        self.cur.execute("SELECT COUNT(*) FROM states;")
+        init_count = self.cur.fetchall()[0][0]
+        self.cur.close()
         self.db.close()
 
         state = State(name="California")
@@ -47,12 +50,36 @@ class test_DBStorage(unittest.TestCase):
         self.db = MySQLdb.connect(host=self.host, port=3306,
                                   db=self.dbname, charset="utf8",
                                   user=self.user, passwd=self.pwd)
-        cur = self.db.cursor()
-        cur.execute("SELECT COUNT(*) FROM states;")
-        final_count = cur.fetchall()[0][0]
-        cur.close()
+        self.cur = self.db.cursor()
+        self.cur.execute("SELECT COUNT(*) FROM states;")
+        final_count = self.cur.fetchall()[0][0]
 
         self.assertNotEqual(init_count, final_count)
+
+    def test_all(self):
+        """ All query is done correctly """
+        state = State(name="California")
+        state.save()
+
+        query_dict = storage.all('State')
+
+        self.cur = self.db.cursor()
+        self.cur.execute("SELECT * FROM states;")
+        query = self.cur.fetchall()[0]
+
+        attrs = ['id', 'created_at', 'updated_at', 'name']
+        for idx, attr in enumerate(attrs):
+            if (attr in ['created_at', 'updated_at']):
+                self.assertEqual(list(query_dict.values())[0].
+                                 __dict__[attr].isoformat().split('.')[0][:-3],
+                                 query[idx].isoformat()[:-3])
+            else:
+                self.assertEqual(list(query_dict.values())[0].__dict__[attr],
+                                 query[idx])
+
+    def test_delete():
+        """Delete query is done correctly"""
+        pass
 
 
 class TestDBStorageDoc(unittest.TestCase):
