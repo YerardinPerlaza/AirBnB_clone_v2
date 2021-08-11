@@ -30,7 +30,7 @@ class DBStorage:
                                       pool_pre_ping=True)
 
         if getenv('HBNB_ENV') == 'test':
-            Base.metadata.drop_all()
+            Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
         """Returns all instances of a given class if passed as argument
