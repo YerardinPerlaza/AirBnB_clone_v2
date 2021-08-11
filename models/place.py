@@ -1,14 +1,11 @@
 #!/usr/bin/python3
 """ Place Module for HBNB project """
 from models.base_model import BaseModel, Base
-from sqlalchemy import Column, Integer, Float, String, ForeignKey
-
-
-association_table = Table('place_amenity', Base.metadata,
-                          Column('place_id', String(60), ForeignKey(
-                              'places.id'), nullable=False),
-                          Column('amenity_id', String(60), ForeignKey(
-                              'amenities.id'), nullable=False)
+from models.review import Review
+from models.amenity import Amenity
+from sqlalchemy import Column, Integer, Float, String, ForeignKey, Table
+from sqlalchemy.orm import relationship
+import models
 
 
 class Place(BaseModel, Base):
@@ -25,12 +22,23 @@ class Place(BaseModel, Base):
     latitude = Column(Float)
     longitude = Column(Float)
 
+    association_table = Table('place_amenity', Base.metadata,
+                              Column('place_id', String(60),
+                                     ForeignKey('places.id'),
+                                     nullable=False),
+                              Column('amenity_id', String(60),
+                                     ForeignKey('amenities.id'),
+                                     nullable=False))
+
     if models.env == 'db':
-        reviews = relationship("Review", cascade="delete", backref="place")
+        reviews = relationship("Review", backref="place",
+                               cascade="all, delete-orphan")
         amenities = relationship("Amenity",
                                  secondary=association_table,
-                                 viewonly=False)                                               )
+                                 viewonly=False)
     else:
+        amenity_ids = []
+
         @property
         def reviews(self):
             review_dict = models.storage.all(Review)
@@ -40,3 +48,11 @@ class Place(BaseModel, Base):
                     review_list.append(val)
             return review_list
 
+        @property
+        def amenities(self):
+            return self.amenity_ids
+
+        @amenities.setter
+        def amenities(self, obj):
+            if isinstance(obj, Amenity):
+                self.amenity_ids.push(obj.id)

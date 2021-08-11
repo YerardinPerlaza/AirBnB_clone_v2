@@ -37,8 +37,8 @@ class DBStorage:
         or all classes otherwise"""
         classes = {
             'User': User, 'Place': Place,
-            'State': State,
-            'City': City  # 'Amenity': Amenity, 'Review': Review
+            'State': State, 'City': City,
+            'Amenity': Amenity, 'Review': Review
         }
         q_dict = {}
 
