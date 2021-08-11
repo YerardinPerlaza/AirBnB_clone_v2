@@ -14,11 +14,14 @@ class test_fileStorage(unittest.TestCase):
 
     def setUp(self):
         """ Set up test environment """
-        del_list = []
-        for key in storage._FileStorage__objects.keys():
-            del_list.append(key)
-        for key in del_list:
-            del storage._FileStorage__objects[key]
+        if os.getenv('HBNB_TYPE_STORAGE') == 'db':
+            self.skipTest('Using DB Storage')
+        else:
+            del_list = []
+            for key in storage._FileStorage__objects.keys():
+                del_list.append(key)
+            for key in del_list:
+                del storage._FileStorage__objects[key]
 
     def tearDown(self):
         """ Remove storage file at end of tests """

@@ -24,12 +24,18 @@ class TestHBNBCommand(TestCase):
 
     def setUp(self):
         """Setup for FileStorage tests."""
-        storage._FileStorage__objects.clear()
+        if os.getenv('HBNB_TYPE_STORAGE') != 'db':
+            storage._FileStorage__objects.clear()
+        else:
+            pass
 
     def tearDown(self):
         """Clean test files."""
-        if os.path.exists(storage._FileStorage__file_path):
-            os.remove(storage._FileStorage__file_path)
+        if os.getenv('HBNB_TYPE_STORAGE') != 'db':
+            if os.path.exists(storage._FileStorage__file_path):
+                os.remove(storage._FileStorage__file_path)
+        else:
+            pass
 
     def test_instance(self):
         """Test for correct instancing of HBNBCommand object."""
@@ -62,6 +68,7 @@ class TestHBNBCommand(TestCase):
             HBNBCommand().onecmd("help")
         self.assertEqual(f.getvalue(), msg)
 
+    @skip("Activate when finished")
     def test_create(self):
         """Test for correct create command action."""
         # Correct message "** class name missing **"
@@ -84,6 +91,7 @@ class TestHBNBCommand(TestCase):
         for key in storage.all().keys():
             self.assertIn(key, json_dict)
 
+    @skip("Activate when finished")
     def test_create_kwarg(self):
         """Test for correct create command action."""
         # Correct creation of object
@@ -110,7 +118,6 @@ class TestHBNBCommand(TestCase):
                     self.assertTrue(val.__dict__[key_json].isoformat(),
                                     val_json)
 
-    @skip("Activate when finished")
     def test_show(self):
         """Test for correct show command action."""
         # Correct message "** class name missing **"
@@ -124,20 +131,20 @@ class TestHBNBCommand(TestCase):
         self.assertEqual(f.getvalue(), "** class doesn't exist **\n")
 
         # Correct message "** instance id missing **"
-        rand_class = random.choice(HBNBCommand().class_list)
+        rand_class = random.choice(list(HBNBCommand().classes.keys()))
         with mock.patch('sys.stdout', new=StringIO()) as f:
             HBNBCommand().onecmd("show " + rand_class)
         self.assertEqual(f.getvalue(), "** instance id missing **\n")
 
         # Correct message "** no instance found **"
-        rand_class = random.choice(HBNBCommand().class_list)
+        rand_class = random.choice(list(HBNBCommand().classes.keys()))
         rand_id = str(uuid.uuid4())
         with mock.patch('sys.stdout', new=StringIO()) as f:
             HBNBCommand().onecmd("show " + rand_class + " " + rand_id)
         self.assertEqual(f.getvalue(), "** no instance found **\n")
 
         # Correct search of object
-        for class_name in HBNBCommand().class_list:
+        for class_name in HBNBCommand().classes.keys():
             with mock.patch('sys.stdout', new=StringIO()) as f:
                 HBNBCommand().onecmd("create " + class_name)
         for key in storage.all():

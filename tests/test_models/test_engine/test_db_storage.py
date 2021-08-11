@@ -3,7 +3,7 @@
 import unittest
 from models.state import State
 from models.engine.db_storage import DBStorage
-from models.__init__ import storage
+from models import storage
 import os
 import inspect
 import pep8
@@ -22,9 +22,13 @@ class test_DBStorage(unittest.TestCase):
         cls.dbname = os.getenv('HBNB_MYSQL_DB')
 
     def setUp(self):
-        self.db = MySQLdb.connect(host=self.host, port=3306,
-                                  db=self.dbname, charset="utf8",
-                                  user=self.user, passwd=self.pwd)
+        """ Set up each test case """
+        if os.getenv('HBNB_TYPE_STORAGE') != 'db':
+            self.skipTest('Using File Storage')
+        else:
+            self.db = MySQLdb.connect(host=self.host, port=3306,
+                                      db=self.dbname, charset="utf8",
+                                      user=self.user, passwd=self.pwd)
 
     def tearDown(self):
         self.db.close()
