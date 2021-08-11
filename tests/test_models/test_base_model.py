@@ -10,14 +10,16 @@ import inspect
 import pep8
 
 
-class test_basemodel(unittest.TestCase):
+class test_basemodel(unittest.TestCase, BaseModel):
     """ """
+    __env = os.getenv("HBNB_TYPE_STORAGE")
 
     def __init__(self, *args, **kwargs):
         """ """
         super().__init__(*args, **kwargs)
         self.name = 'BaseModel'
         self.value = BaseModel
+        self.obj = self.value()
 
     def setUp(self):
         """ """
@@ -49,6 +51,7 @@ class test_basemodel(unittest.TestCase):
         with self.assertRaises(TypeError):
             new = BaseModel(**copy)
 
+    @unittest.skipIf(__env == 'db', "Using filestorage")
     def test_save_file_storage(self):
         """ Testing save on file_storage """
         i = self.value()
@@ -106,10 +109,11 @@ class test_basemodel(unittest.TestCase):
     def test_delete(self):
         """ Delete method from base_model functioning properly """
         from models.__init__ import storage
-        new = BaseModel()
+        new = self.value()
+        key = self.name + '.' + new.id
         new.save()
         new.delete()
-        self.assertEqual(storage.all(), {})
+        self.assertNotIn(key, storage.all())
 
 
 class TestBaseModelDoc(unittest.TestCase):
