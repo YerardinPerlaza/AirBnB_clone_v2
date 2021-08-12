@@ -8,6 +8,7 @@ import json
 import os
 import inspect
 import pep8
+from unittest.case import skipIf
 
 
 class test_basemodel(unittest.TestCase):
@@ -49,6 +50,8 @@ class test_basemodel(unittest.TestCase):
         with self.assertRaises(TypeError):
             new = BaseModel(**copy)
 
+    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
+                     'skip in case is db_storage')
     def test_save_file_storage(self):
         """ Testing save on file_storage """
         i = self.value()

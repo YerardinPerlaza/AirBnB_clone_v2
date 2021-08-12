@@ -7,8 +7,11 @@ from models import storage
 import os
 import inspect
 import pep8
+from unittest.case import skipIf
 
 
+@skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
+        'skip in case is db_storage')
 class test_fileStorage(unittest.TestCase):
     """ Class to test the file storage method """
 
