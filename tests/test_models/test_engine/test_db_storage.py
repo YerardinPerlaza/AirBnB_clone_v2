@@ -8,6 +8,7 @@ import os
 import inspect
 import pep8
 import MySQLdb
+from unittest.case import skipIf
 
 
 class test_DBStorage(unittest.TestCase):
@@ -21,6 +22,8 @@ class test_DBStorage(unittest.TestCase):
         cls.host = os.getenv('HBNB_MYSQL_HOST')
         cls.dbname = os.getenv('HBNB_MYSQL_DB')
 
+    @skipIf(os.getenv('HBNB_TYPE_STORAGE') != 'db',
+            'skip if is FileStorage')
     def setUp(self):
         self.db = MySQLdb.connect(host=self.host, port=3306,
                                   db=self.dbname, charset="utf8",
