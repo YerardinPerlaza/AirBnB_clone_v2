@@ -13,23 +13,23 @@ class test_User(test_basemodel):
         self.name = "User"
         self.value = User
 
-        self.obj = self.value(first_name="John",
-                              last_name="Doe",
-                              email="john.doe@johndoe.com",
-                              password="johndoe123")
 
     def test_first_name(self):
-        """ """
-        self.assertEqual(type(self.obj.first_name), str)
+        """ check first name """
+        new = self.value(first_name='John')
+        self.assertEqual(type(new.first_name), str)
 
     def test_last_name(self):
-        """ """
-        self.assertEqual(type(self.obj.last_name), str)
+        """ check last name """
+        new = self.value(last_name='Doe')
+        self.assertEqual(type(new.last_name), str)
 
     def test_email(self):
         """ """
-        self.assertEqual(type(self.obj.email), str)
+        new = self.value(email='johndoe@johndoe.com')
+        self.assertEqual(type(new.email), str)
 
     def test_password(self):
         """ """
-        self.assertEqual(type(self.obj.password), str)
+        new = self.value(password='johndoe123')
+        self.assertEqual(type(new.password), str)

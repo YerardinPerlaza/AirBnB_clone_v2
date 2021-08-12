@@ -8,12 +8,11 @@ import json
 import os
 import inspect
 import pep8
+from unittest.case import skipIf
 
 
 class test_basemodel(unittest.TestCase, BaseModel):
     """ """
-    __env = os.getenv("HBNB_TYPE_STORAGE")
-
     def __init__(self, *args, **kwargs):
         """ """
         super().__init__(*args, **kwargs)
@@ -51,7 +50,8 @@ class test_basemodel(unittest.TestCase, BaseModel):
         with self.assertRaises(TypeError):
             new = BaseModel(**copy)
 
-    @unittest.skipIf(__env == 'db', "Using filestorage")
+    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
+                     'skip in case is db_storage')
     def test_save_file_storage(self):
         """ Testing save on file_storage """
         i = self.value()
@@ -65,7 +65,7 @@ class test_basemodel(unittest.TestCase, BaseModel):
         """ """
         i = self.value()
         self.assertEqual(str(i), '[{}] ({}) {}'.format(self.name, i.id,
-                         i.__dict__))
+                                                       i.__dict__))
 
     def test_todict(self):
         """ """
@@ -80,13 +80,6 @@ class test_basemodel(unittest.TestCase, BaseModel):
         n = {None: None}
         with self.assertRaises(TypeError):
             new = self.value(**n)
-
-    def test_kwargs_one(self):
-        """ """
-        n = {'Name': 'test'}
-        new = self.value(**n)
-        self.assertIn(list(n.keys())[0], new.__dict__)
-        self.assertEqual(n['Name'], new.__dict__['Name'])
 
     def test_id(self):
         """ """
@@ -105,15 +98,6 @@ class test_basemodel(unittest.TestCase, BaseModel):
         n = new.to_dict()
         new = BaseModel(**n)
         self.assertFalse(new.created_at == new.updated_at)
-
-    def test_delete(self):
-        """ Delete method from base_model functioning properly """
-        from models.__init__ import storage
-        new = self.value()
-        key = self.name + '.' + new.id
-        new.save()
-        new.delete()
-        self.assertNotIn(key, storage.all())
 
 
 class TestBaseModelDoc(unittest.TestCase):
