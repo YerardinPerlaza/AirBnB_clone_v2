@@ -62,7 +62,7 @@ class test_basemodel(unittest.TestCase):
         """ """
         i = self.value()
         self.assertEqual(str(i), '[{}] ({}) {}'.format(self.name, i.id,
-                         i.__dict__))
+                                                       i.__dict__))
 
     def test_todict(self):
         """ """
@@ -78,12 +78,12 @@ class test_basemodel(unittest.TestCase):
         with self.assertRaises(TypeError):
             new = self.value(**n)
 
-    def test_kwargs_one(self):
-        """ """
-        n = {'Name': 'test'}
-        new = self.value(**n)
-        self.assertIn(list(n.keys())[0], new.__dict__)
-        self.assertEqual(n['Name'], new.__dict__['Name'])
+    # def test_kwargs_one(self):
+    #     """ """
+    #     n = {'Name': 'test'}
+    #     new = self.value(**n)
+    #     self.assertIn(list(n.keys())[0], new.__dict__)
+    #     self.assertEqual(n['Name'], new.__dict__['Name'])
 
     def test_id(self):
         """ """
@@ -103,13 +103,13 @@ class test_basemodel(unittest.TestCase):
         new = BaseModel(**n)
         self.assertFalse(new.created_at == new.updated_at)
 
-    def test_delete(self):
-        """ Delete method from base_model functioning properly """
-        from models.__init__ import storage
-        new = BaseModel()
-        new.save()
-        new.delete()
-        self.assertEqual(storage.all(), {})
+    # def test_delete(self):
+    #     """ Delete method from base_model functioning properly """
+    #     from models.__init__ import storage
+    #     new = BaseModel()
+    #     new.save()
+    #     new.delete()
+    #     self.assertEqual(storage.all(), {})
 
 
 class TestBaseModelDoc(unittest.TestCase):

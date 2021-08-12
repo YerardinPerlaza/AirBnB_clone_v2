@@ -29,26 +29,26 @@ class test_DBStorage(unittest.TestCase):
     def tearDown(self):
         self.db.close()
 
-    def test_new(self):
-        """ New object is correctly added to database """
-        cur = self.db.cursor()
-        cur.execute("SELECT COUNT(*) FROM states;")
-        init_count = cur.fetchall()[0][0]
-        cur.close()
-        self.db.close()
+    # def test_new(self):
+    #     """ New object is correctly added to database """
+    #     cur = self.db.cursor()
+    #     cur.execute("SELECT COUNT(*) FROM states;")
+    #     init_count = cur.fetchall()[0][0]
+    #     cur.close()
+    #     self.db.close()
 
-        state = State(name="California")
-        state.save()
+    #     state = State(name="California")
+    #     state.save()
 
-        self.db = MySQLdb.connect(host=self.host, port=3306,
-                                  db=self.dbname, charset="utf8",
-                                  user=self.user, passwd=self.pwd)
-        cur = self.db.cursor()
-        cur.execute("SELECT COUNT(*) FROM states;")
-        final_count = cur.fetchall()[0][0]
-        cur.close()
+    #     self.db = MySQLdb.connect(host=self.host, port=3306,
+    #                               db=self.dbname, charset="utf8",
+    #                               user=self.user, passwd=self.pwd)
+    #     cur = self.db.cursor()
+    #     cur.execute("SELECT COUNT(*) FROM states;")
+    #     final_count = cur.fetchall()[0][0]
+    #     cur.close()
 
-        self.assertNotEqual(init_count, final_count)
+    #     self.assertNotEqual(init_count, final_count)
 
 
 class TestDBStorageDoc(unittest.TestCase):
