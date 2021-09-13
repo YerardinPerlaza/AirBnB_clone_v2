@@ -63,3 +63,7 @@ class FileStorage:
                                  in FileStorage.__objects.items()
                                  if val != obj}
         self.save()
+
+    def close(self):
+        ''' deserializes json file to objects '''
+        self.reload()
